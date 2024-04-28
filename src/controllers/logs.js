@@ -15,9 +15,9 @@ const fetchLogs = (req, res) => {
                 for (let i = 0; i < rows.length; i++) {
                     result.push({ id: rows[i].id, data_ora: rows[i].data_ora, commento: rows[i].commento })
                 }
-                res.status(201).json({ ok: 'true', dati: result })
+                res.status(200).json({ ok: 'true', dati: result })
             } else {
-                res.status(201).json({ ok: 'true', dati: [] })
+                res.status(200).json({ ok: 'true', dati: [] })
             }
         })
 
@@ -40,9 +40,9 @@ const newLog = (req, res) => {
 
             if (err) {
                 console.log(err)
-                res.status(200).json({ ok: 'false' })
+                res.status(201).json({ ok: 'false' })
             } else {
-                res.status(200).json({ ok: 'true' })
+                res.status(201).json({ ok: 'true' })
             }
         })
     } catch (errore) {

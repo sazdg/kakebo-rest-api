@@ -15,9 +15,9 @@ const fetchTipi = (req, res) => {
                 for (let i = 0; i < rows.length; i++) {
                     result.push({ id_tipo: rows[i].id_tipo, tipo: rows[i].tipo, descrizione: rows[i].descrizione })
                 }
-                res.status(201).json({ ok: 'true', dati: result })
+                res.status(200).json({ ok: 'true', dati: result })
             } else {
-                res.status(201).json({ ok: 'true', dati: [] })
+                res.status(200).json({ ok: 'true', dati: [] })
             }
         })
 
@@ -40,9 +40,9 @@ const newTipo = (req, res) => {
 
             if (err) {
                 console.log(err)
-                res.status(200).json({ ok: 'false' })
+                res.status(201).json({ ok: 'false' })
             } else {
-                res.status(200).json({ ok: 'true' })
+                res.status(201).json({ ok: 'true' })
             }
         })
     } catch (errore) {

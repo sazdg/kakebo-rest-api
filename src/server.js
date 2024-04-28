@@ -11,7 +11,8 @@ const moment = require('moment')
 
 //app.use(cors({ origin: `http://localhost:${port}` }))
 
-const port = process.env.PORT
+var port = process.env.PORT
+
 console.log('Environment: ', process.env.ENVIRONMENT)
 console.log(process.env.GREETING_MESSAGE)
 

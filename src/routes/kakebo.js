@@ -1,11 +1,15 @@
 const express = require('express')
 const router = express.Router()
 
+const testController = require('../controllers/test')
 const logsController = require('../controllers/logs')
 const regaliController = require('../controllers/regali')
 const speseController = require('../controllers/spese')
 const tipologieController = require('../controllers/tipologie')
 const viaggiController = require('../controllers/viaggi')
+
+router.get('/', testController.showFeedback)
+router.get('/ping', testController.pong)
 
 router.post('/log', logsController.newLog)
 router.get('/log', logsController.fetchLogs)
