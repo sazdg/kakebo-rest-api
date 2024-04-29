@@ -53,6 +53,7 @@ const fetchSpese = (req, res) => {
     if (condition !== "") {
         query += ` WHERE ${condition}`
     }
+    query += " ORDER BY data_ora ASC"
 
     try {
         conn.query(query, (err, rows, fields) => {
