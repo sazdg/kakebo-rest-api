@@ -1,24 +1,24 @@
 const conn = require('../config/connection')
+const moment = require('moment')
 
 const fetchSpese = (req, res) => {
     res.set('Access-Control-Allow-Origin', '*')
     console.log('fetchSpese')
 
-    var body = req.body
     // id_spese
     // data_ora
     // spesa
     // id_tipo
     // descrizione
     // tipo_movimento
-    let idSpese = body.id_spese
-    let tipoMovimento = body.tipo_movimento
-    let descrizione = body.descrizione
-    let idTipo = body.id_tipo
-    let descrizioneTipo = body.descrizione_tipo
-    let dataDa = body.data_da
-    let dataA = body.data_a
-    //TODO: testare filtri
+    let idSpese = req.query.id_spese
+    let tipoMovimento = req.query.tipo_movimento
+    let descrizione = req.query.descrizione
+    let idTipo = req.query.id_tipo
+    let descrizioneTipo = req.query.descrizione_tipo
+    let dataDa = req.query.data_da
+    let dataA = req.query.data_a
+
     var query = "SELECT ks.*, kt.tipo AS descrizione_tipo FROM kakebo_spese ks LEFT JOIN kakebo_tipi kt ON (kt.id_tipo=ks.id_tipo)"
     var condition = ""
     if (idSpese !== undefined) {
@@ -30,7 +30,7 @@ const fetchSpese = (req, res) => {
     }
     if (descrizione !== undefined) {
         condition += condition !== "" ? " AND " : ""
-        condition += `ks.descrizione = "${descrizione}"`
+        condition += `ks.descrizione LIKE "%${descrizione}%"`
     }
     if (idTipo !== undefined) {
         condition += condition !== "" ? " AND " : ""
@@ -54,7 +54,7 @@ const fetchSpese = (req, res) => {
         query += ` WHERE ${condition}`
     }
     query += " ORDER BY data_ora ASC"
-
+    console.log(query)
     try {
         conn.query(query, (err, rows, fields) => {
             if (rows == undefined) throw err
@@ -62,7 +62,7 @@ const fetchSpese = (req, res) => {
             if (rows.length >= 1) {
                 var result = [];
                 for (let i = 0; i < rows.length; i++) {
-                    result.push({ id_spesa: rows[i].id_spesa, data_ora: rows[i].data_ora, spesa: rows[i].spesa, descrizione_spesa: rows[i].descrizione, id_tipo: rows[i].id_tipo, descrizione_tipo: rows[i].descrizione_tipo, tipo_movimento: rows[i].tipo_movimento, is_regalo: rows[i].is_regalo })
+                    result.push({ id_spesa: rows[i].id_spese, data_ora: rows[i].data_ora, spesa: rows[i].spesa, descrizione_spesa: rows[i].descrizione, id_tipo: rows[i].id_tipo, descrizione_tipo: rows[i].descrizione_tipo, tipo_movimento: rows[i].tipo_movimento, is_regalo: rows[i].is_regalo, metodo: rows[i].metodo })
                 }
                 res.status(200).json({ ok: 'true', dati: result })
             } else {
@@ -71,31 +71,30 @@ const fetchSpese = (req, res) => {
         })
 
     } catch (errore) {
-        res.status(400).json({ ok: 'false', debug: errore })
+        res.status(500).json({ ok: 'false', debug: errore })
     }
-    console.log(query)
 }
 
 const newSpesa = (req, res) => {
     res.set('Access-Control-Allow-Origin', '*')
     console.log('newSpesa')
 
-    //{ "data": "2024-04-13 21:00:00.000", "spesa": "72.0", "id_tipo": "10", "descrizione": "", "tipo_movimento": "0", "is_regalo":"0" }
+    //{ "data": "2024-04-13 21:00:00.000", "spesa": "72.0", "id_tipo": "10", "descrizione": "", "tipo_movimento": "0", "is_regalo":"0", "metodo":"0" }
     var body = req.body
-    var query = `INSERT INTO kakebo_spese (data_ora, spesa, id_tipo, descrizione, tipo_movimento, is_regalo) VALUES ("${body.data}", "${body.spesa}", "${body.id_tipo}", "${body.descrizione}", "${body.tipo_movimento}", "${body.is_regalo}")`
-
+    var query = `INSERT INTO kakebo_spese (data_ora, spesa, id_tipo, descrizione, tipo_movimento, is_regalo, metodo) VALUES ("${body.data}", "${body.spesa}", "${body.id_tipo}", "${body.descrizione}", "${body.tipo_movimento}", "${body.is_regalo}", "${body.metodo}")`
+    console.log(query)
     try {
         conn.query(query, (err, rows, fields) => {
 
             if (err) {
                 console.log(err)
-                res.status(201).json({ ok: 'false' })
+                res.status(400).json({ ok: 'false' })
             } else {
                 res.status(201).json({ ok: 'true' })
             }
         })
     } catch (errore) {
-        res.status(400).json({ ok: 'false', debug: errore })
+        res.status(500).json({ ok: 'false', debug: errore })
     }
 }
 
@@ -111,13 +110,13 @@ const deleteSpesa = (req, res) => {
 
             if (err) {
                 console.log(err)
-                res.status(200).json({ ok: 'false' })
+                res.status(400).json({ ok: 'false' })
             } else {
                 res.status(200).json({ ok: 'true' })
             }
         })
     } catch (errore) {
-        res.status(400).json({ ok: 'false', debug: errore })
+        res.status(500).json({ ok: 'false', debug: errore })
     }
     
 }

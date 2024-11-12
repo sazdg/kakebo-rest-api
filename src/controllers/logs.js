@@ -22,7 +22,7 @@ const fetchLogs = (req, res) => {
         })
 
     } catch (errore) {
-        res.status(400).json({ ok: 'false', debug: errore })
+        res.status(500).json({ ok: 'false', debug: errore })
     }
 }
 
@@ -40,13 +40,13 @@ const newLog = (req, res) => {
 
             if (err) {
                 console.log(err)
-                res.status(201).json({ ok: 'false' })
+                res.status(400).json({ ok: 'false' })
             } else {
                 res.status(201).json({ ok: 'true' })
             }
         })
     } catch (errore) {
-        res.status(400).json({ ok: 'false', debug: errore })
+        res.status(500).json({ ok: 'false', debug: errore })
     }
 }
 

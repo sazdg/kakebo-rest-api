@@ -7,7 +7,6 @@ dotenv.config()
 
 
 const cors = require('cors')
-const moment = require('moment')
 
 //app.use(cors({ origin: `http://localhost:${port}` }))
 
