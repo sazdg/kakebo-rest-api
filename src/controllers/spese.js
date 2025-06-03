@@ -1,9 +1,7 @@
 const conn = require('../config/connection')
 const moment = require('moment')
 
-const fetchSpese = (req, res) => {
-    res.set('Access-Control-Allow-Origin', '*')
-    console.log('fetchSpese')
+const composeQuery = (req, group) => {
 
     // id_spese
     // data_ora
@@ -18,8 +16,12 @@ const fetchSpese = (req, res) => {
     let descrizioneTipo = req.query.descrizione_tipo
     let dataDa = req.query.data_da
     let dataA = req.query.data_a
-
-    var query = "SELECT ks.*, kt.tipo AS descrizione_tipo FROM kakebo_spese ks LEFT JOIN kakebo_tipi kt ON (kt.id_tipo=ks.id_tipo)"
+    var query = ""
+    if (group ){
+        query = "SELECT ks.id_tipo, SUM(ks.spesa) AS spesa, ks.tipo_movimento FROM kakebo_spese ks LEFT JOIN kakebo_tipi ON (kt.id_tipo=ks.id_tipo) "
+    }  else {
+        query = "SELECT ks.*, kt.tipo AS descrizione_tipo FROM kakebo_spese ks LEFT JOIN kakebo_tipi kt ON (kt.id_tipo=ks.id_tipo) "
+    }
     var condition = ""
     if (idSpese !== undefined) {
         condition += `ks.id_spese = "${idSpese}"`
@@ -53,8 +55,19 @@ const fetchSpese = (req, res) => {
     if (condition !== "") {
         query += ` WHERE ${condition}`
     }
-    query += " ORDER BY data_ora ASC"
+    if (group){
+        query += " GROUP BY ks.id_tipo, ks.tipo_movimento ORDER BY ks.id_tipo ASC"
+    } else {
+        query += " ORDER BY data_ora ASC"
+    }
     console.log(query)
+    return query
+}
+
+const fetchSpeseGroup = (req, res) => {
+    res.set('Access-Control-Allow-Origin', '*')
+    console.log('fetchSpeseGroup') 
+    let query = composeQuery(req, true) 
     try {
         conn.query(query, (err, rows, fields) => {
             if (rows == undefined) throw err
@@ -62,8 +75,8 @@ const fetchSpese = (req, res) => {
             if (rows.length >= 1) {
                 var result = [];
                 for (let i = 0; i < rows.length; i++) {
-                    result.push({ id_spesa: rows[i].id_spese, data_ora: rows[i].data_ora, spesa: rows[i].spesa, descrizione_spesa: rows[i].descrizione, id_tipo: rows[i].id_tipo, descrizione_tipo: rows[i].descrizione_tipo, tipo_movimento: rows[i].tipo_movimento, is_regalo: rows[i].is_regalo, metodo: rows[i].metodo })
-                }
+                    result.push({  spesa: rows[i].spesa, id_tipo: rows[i].id_tipo, descrizione_tipo: rows[i].descrizione_tipo, tipo_movimento: rows[i].tipo_movimento })
+                } 
                 res.status(200).json({ ok: 'true', dati: result })
             } else {
                 res.status(200).json({ ok: 'true', dati: [] })
@@ -72,6 +85,33 @@ const fetchSpese = (req, res) => {
 
     } catch (errore) {
         res.status(500).json({ ok: 'false', debug: errore })
+        console.log(query)
+    }
+}
+
+const fetchSpese = (req, res) => {
+    res.set('Access-Control-Allow-Origin', '*')
+    console.log('fetchSpese')
+    let query = composeQuery(req, false)
+     
+    try {
+        conn.query(query, (err, rows, fields) => {
+            if (rows == undefined) throw err
+
+            if (rows.length >= 1) {
+                var result = [];
+                for (let i = 0; i < rows.length; i++) {  
+                    result.push({ id_spesa: rows[i].id_spese, data_ora: moment(rows[i].data_ora).utcOffset(120), spesa: rows[i].spesa, descrizione_spesa: rows[i].descrizione, id_tipo: rows[i].id_tipo, descrizione_tipo: rows[i].descrizione_tipo, tipo_movimento: rows[i].tipo_movimento, is_regalo: rows[i].is_regalo, metodo: rows[i].metodo })
+                }  
+                res.status(200).json({ ok: 'true', dati: result })
+            } else {
+                res.status(200).json({ ok: 'true', dati: [] })
+            }
+        })
+
+    } catch (errore) {
+        res.status(500).json({ ok: 'false', debug: errore })
+        console.log(query)
     }
 }
 
@@ -79,9 +119,11 @@ const newSpesa = (req, res) => {
     res.set('Access-Control-Allow-Origin', '*')
     console.log('newSpesa')
 
-    //{ "data": "2024-04-13 21:00:00.000", "spesa": "72.0", "id_tipo": "10", "descrizione": "", "tipo_movimento": "0", "is_regalo":"0", "metodo":"0" }
+    //{"id":0, "data": "2024-04-13 21:00:00.000", "spesa": "72.0", "id_tipo": "10", "descrizione": "", "tipo_movimento": "0", "is_regalo":"0", "metodo":"0" }
     var body = req.body
-    var query = `INSERT INTO kakebo_spese (data_ora, spesa, id_tipo, descrizione, tipo_movimento, is_regalo, metodo) VALUES ("${body.data}", "${body.spesa}", "${body.id_tipo}", "${body.descrizione}", "${body.tipo_movimento}", "${body.is_regalo}", "${body.metodo}")`
+    var query = `INSERT INTO kakebo_spese (id_spese, data_ora, spesa, id_tipo, descrizione, tipo_movimento, is_regalo, metodo) 
+    VALUES ("${body.id}", "${body.data}", "${body.spesa}", "${body.id_tipo}", "${body.descrizione}", "${body.tipo_movimento}", "${body.is_regalo}", "${body.metodo}") 
+    ON DUPLICATE KEY UPDATE data_ora="${body.data}", spesa="${body.spesa}", id_tipo="${body.id_tipo}", descrizione="${body.descrizione}", tipo_movimento="${body.tipo_movimento}", is_regalo="${body.is_regalo}", metodo="${body.metodo}"`
     console.log(query)
     try {
         conn.query(query, (err, rows, fields) => {
@@ -95,6 +137,7 @@ const newSpesa = (req, res) => {
         })
     } catch (errore) {
         res.status(500).json({ ok: 'false', debug: errore })
+        console.log(query)
     }
 }
 
@@ -117,7 +160,8 @@ const deleteSpesa = (req, res) => {
         })
     } catch (errore) {
         res.status(500).json({ ok: 'false', debug: errore })
+        console.log(query)
     }
     
 }
-module.exports = { fetchSpese, newSpesa, deleteSpesa }
+module.exports = { fetchSpese, fetchSpeseGroup, newSpesa, deleteSpesa }

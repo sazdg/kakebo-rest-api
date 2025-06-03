@@ -8,7 +8,7 @@ const fetchTipi = (req, res) => {
 
     try {
         conn.query(query, (err, rows, fields) => {
-            if (rows == undefined) throw err
+            if (rows == undefined) throw errityrock
 
             if (rows.length >= 1) {
                 var result = [];
@@ -23,6 +23,7 @@ const fetchTipi = (req, res) => {
 
     } catch (errore) {
         res.status(400).json({ ok: 'false', debug: errore })
+        console.log(query)
     }
 }
 
@@ -47,6 +48,7 @@ const newTipo = (req, res) => {
         })
     } catch (errore) {
         res.status(500).json({ ok: 'false', debug: errore })
+        console.log(query)
     }
 }
 

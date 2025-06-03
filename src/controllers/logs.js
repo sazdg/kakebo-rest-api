@@ -23,6 +23,7 @@ const fetchLogs = (req, res) => {
 
     } catch (errore) {
         res.status(500).json({ ok: 'false', debug: errore })
+        console.log(query)
     }
 }
 
@@ -47,6 +48,7 @@ const newLog = (req, res) => {
         })
     } catch (errore) {
         res.status(500).json({ ok: 'false', debug: errore })
+        console.log(query)
     }
 }
 

@@ -23,6 +23,7 @@ const fetchViaggi = (req, res) => {
 
     } catch (errore) {
         res.status(400).json({ ok: 'false', debug: errore })
+        console.log(query)
     }
 }
 
@@ -34,7 +35,8 @@ const newViaggio = (req, res) => {
 
     var body = req.body
     var query = `INSERT INTO viaggi (da_quando, a_quando, descrizione) VALUES ("${body.da_quando}", "${body.a_quando}", "${body.descrizione}")`
-
+    console.log(query)
+    console.log(body)
     try {
         conn.query(query, (err, rows, fields) => {
 
@@ -47,6 +49,7 @@ const newViaggio = (req, res) => {
         })
     } catch (errore) {
         res.status(500).json({ ok: 'false', debug: errore })
+        console.log(query)
     }
 }
 

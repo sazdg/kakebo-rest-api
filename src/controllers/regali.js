@@ -24,6 +24,7 @@ const fetchRegali = (req, res) => {
 
     } catch (errore) {
         res.status(400).json({ ok: 'false', debug: errore })
+        console.log(query)
     }
 }
 
@@ -36,8 +37,7 @@ const newRegalo = (req, res) => {
     //{"id_spese": "0", "data": "2024-04-13 00:00:00.000", "spesa":"0", "id_tipo":"16", "descrizione":"Orecchini pandora", "tipo_movimento":"1", "is_regalo":"1", "mittente_regalo":"Rosario Fiorella", "destinatario_regalo": "Sara", "evento": "Laurea"}
    
     var body = req.body
-    var lastId = 0
-    console.log(body.id_spese)
+    var lastId = 0 
     
     if (body.id_spese == 0){
         console.log('new spesa')
@@ -57,7 +57,7 @@ const newRegalo = (req, res) => {
                 lastId = rows[0].id
             })
         }catch(errore){
-
+            console.log(querySpesa)
         }
     } else {
         
@@ -86,6 +86,7 @@ const newRegalo = (req, res) => {
         }
     }catch (errore) {
         res.status(500).json({ ok: 'false', debug: errore })
+        console.log(query)
     }
    
     
