@@ -1,4 +1,5 @@
 const conn = require('../config/connection')
+const moment = require('moment')
 
 const fetchViaggi = (req, res) => {
     res.set('Access-Control-Allow-Origin', '*')
@@ -34,9 +35,22 @@ const newViaggio = (req, res) => {
     console.log('newViaggio')
 
     var body = req.body
-    var query = `INSERT INTO viaggi (da_quando, a_quando, descrizione) VALUES ("${body.da_quando}", "${body.a_quando}", "${body.descrizione}")`
-    console.log(query)
     console.log(body)
+    var data_da, data_a
+    if (body.data_da !== undefined) {  
+        data_da = moment(body.data_da, 'ddd MMM DD HH:mm:ss z YYYY')
+        .utcOffset(60)
+        .add(1, 'days')
+        .format('YYYY-MM-DD')
+        }
+    if (body.data_a !== undefined) {  
+        data_a = moment(body.data_a, 'ddd MMM DD HH:mm:ss z YYYY')
+        .utcOffset(60)
+        .add(1, 'days')
+        .format('YYYY-MM-DD')
+    }
+    var query = `INSERT INTO viaggi (da_quando, a_quando, descrizione) VALUES ("${data_da}", "${data_a}", "${body.descrizione}")`
+    console.log(query)
     try {
         conn.query(query, (err, rows, fields) => {
 
