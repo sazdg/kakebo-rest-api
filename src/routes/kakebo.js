@@ -27,5 +27,6 @@ router.get('/tipo', tipologieController.fetchTipi)
 
 router.post('/viaggio', viaggiController.newViaggio)
 router.get('/viaggio', viaggiController.fetchViaggi)
+router.delete('/viaggio', viaggiController.deleteViaggio)
 
 module.exports = router

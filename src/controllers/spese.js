@@ -110,8 +110,7 @@ const fetchSpese = (req, res) => {
         })
 
     } catch (errore) {
-        res.status(500).json({ ok: 'false', debug: errore })
-        console.log(query)
+        res.status(500).json({ ok: 'false', debug: errore }) 
     }
 }
 
