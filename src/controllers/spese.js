@@ -101,7 +101,7 @@ const fetchSpese = (req, res) => {
             if (rows.length >= 1) {
                 var result = [];
                 for (let i = 0; i < rows.length; i++) {  
-                    result.push({ id_spesa: rows[i].id_spese, data_ora: moment(rows[i].data_ora).utcOffset(120), spesa: rows[i].spesa, descrizione_spesa: rows[i].descrizione, id_tipo: rows[i].id_tipo, descrizione_tipo: rows[i].descrizione_tipo, tipo_movimento: rows[i].tipo_movimento, is_regalo: rows[i].is_regalo, metodo: rows[i].metodo })
+                    result.push({ id_spesa: rows[i].id_spese, data_ora: moment(rows[i].data_ora).utcOffset(120), spesa: rows[i].spesa, descrizione_spesa: rows[i].descrizione, id_tipo: rows[i].id_tipo, descrizione_tipo: rows[i].descrizione_tipo, tipo_movimento: rows[i].tipo_movimento, is_regalo: rows[i].is_regalo, metodo: rows[i].metodo, prezzo_pieno: rows[i].prezzo_pieno, sconto: rows[i].sconto })
                 }  
                 res.status(200).json({ ok: 'true', dati: result })
             } else {
@@ -120,9 +120,9 @@ const newSpesa = (req, res) => {
 
     //{"id":0, "data": "2024-04-13 21:00:00.000", "spesa": "72.0", "id_tipo": "10", "descrizione": "", "tipo_movimento": "0", "is_regalo":"0", "metodo":"0" }
     var body = req.body
-    var query = `INSERT INTO kakebo_spese (id_spese, data_ora, spesa, id_tipo, descrizione, tipo_movimento, is_regalo, metodo) 
-    VALUES ("${body.id}", "${body.data}", "${body.spesa}", "${body.id_tipo}", "${body.descrizione}", "${body.tipo_movimento}", "${body.is_regalo}", "${body.metodo}") 
-    ON DUPLICATE KEY UPDATE data_ora="${body.data}", spesa="${body.spesa}", id_tipo="${body.id_tipo}", descrizione="${body.descrizione}", tipo_movimento="${body.tipo_movimento}", is_regalo="${body.is_regalo}", metodo="${body.metodo}"`
+    var query = `INSERT INTO kakebo_spese (id_spese, data_ora, spesa, id_tipo, descrizione, tipo_movimento, is_regalo, metodo, prezzo_pieno, sconto) 
+    VALUES ("${body.id}", "${body.data}", "${body.spesa}", "${body.id_tipo}", "${body.descrizione}", "${body.tipo_movimento}", "${body.is_regalo}", "${body.metodo}", "${body.prezzo_pieno}", "${body.sconto}") 
+    ON DUPLICATE KEY UPDATE data_ora="${body.data}", spesa="${body.spesa}", id_tipo="${body.id_tipo}", descrizione="${body.descrizione}", tipo_movimento="${body.tipo_movimento}", is_regalo="${body.is_regalo}", metodo="${body.metodo}", prezzo_pieno="${body.prezzo_pieno}", sconto="${body.sconto}"`
     console.log(query)
     try {
         conn.query(query, (err, rows, fields) => {
