@@ -7,6 +7,7 @@ const regaliController = require('../controllers/regali')
 const speseController = require('../controllers/spese')
 const tipologieController = require('../controllers/tipologie')
 const viaggiController = require('../controllers/viaggi')
+const notesController = require('../controllers/notes')
 
 router.get('/', testController.showFeedback)
 router.get('/ping', testController.pong)
@@ -28,5 +29,9 @@ router.get('/tipo', tipologieController.fetchTipi)
 router.post('/viaggio', viaggiController.newViaggio)
 router.get('/viaggio', viaggiController.fetchViaggi)
 router.delete('/viaggio', viaggiController.deleteViaggio)
+
+router.get('/notes', notesController.fetchNotes)
+router.post('/notes', notesController.newNote)
+router.delete('/notes', notesController.deleteNote)
 
 module.exports = router
