@@ -21,6 +21,7 @@ router.get('/regalo', regaliController.fetchRegali)
 router.post('/spesa', speseController.newSpesa)
 router.get('/spesa', speseController.fetchSpese)
 router.get('/spesa-group', speseController.fetchSpeseGroup)
+router.get('/spesa-chart', speseController.fetchSpeseChart)
 router.delete('/spesa', speseController.deleteSpesa)
 
 router.post('/tipo', tipologieController.newTipo)

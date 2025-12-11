@@ -38,7 +38,7 @@ const newRegalo = (req, res) => {
    
     var body = req.body
     var lastId = 0 
-    
+    console.log(body)
     if (body.id_spese == 0){
         console.log('new spesa')
         var querySpesa = `INSERT INTO kakebo_spese (data_ora, spesa, id_tipo, descrizione, tipo_movimento, is_regalo) VALUES ("${body.data}", "${body.spesa}", "${body.id_tipo}", "${body.descrizione}", "${body.tipo_movimento}", "${body.is_regalo}")`

@@ -145,9 +145,16 @@ const deleteSpesa = (req, res) => {
     res.set('Access-Control-Allow-Origin', '*')
     //{ "id": "4" }
     var body = req.body
-    var query = `DELETE FROM kakebo_spese WHERE id_spese = "${body.id}"`
+    var query = `DELETE FROM regali WHERE id_spese = "${body.id}"`
 
     try {
+        conn.query(query, (err, rows, fields) => {
+            if (err) {
+                console.log(err)
+            }
+        })
+
+        query = `DELETE FROM kakebo_spese WHERE id_spese = "${body.id}"`
         conn.query(query, (err, rows, fields) => {
 
             if (err) {
@@ -163,4 +170,61 @@ const deleteSpesa = (req, res) => {
     }
     
 }
-module.exports = { fetchSpese, fetchSpeseGroup, newSpesa, deleteSpesa }
+
+const fetchSpeseChart = (req,res) => {
+    console.log('fetchSpeseChart')
+    res.set('Access-Control-Allow-Origin', '*')
+
+    var lista = new Map
+    var results = []
+    var entrate = []
+    var uscite = []
+    var labels = []
+    var query = `SELECT year(data_ora) AS year, month(data_ora) AS month, ROUND(SUM(spesa),2) AS somma, tipo_movimento
+FROM kakebo.kakebo_spese ks GROUP BY tipo_movimento, year(data_ora), month(data_ora)
+ORDER BY year(data_ora), month(data_ora), tipo_movimento`
+
+    try {
+        conn.query(query, (err, rows, fields) => {
+
+            if (err) {
+                console.log(err)
+                res.status(400).json({ ok: 'false', dati: []})
+            } else {
+                
+                for(let i=0; i < rows.length; i++){
+                    // TODO: capire se is_regalo può influire nella condizione
+                    
+                    let chiaveData = rows[i].month + "/" + rows[i].year
+                    let movimento = rows[i].tipo_movimento
+                    let totale = rows[i].somma 
+
+                    if (!lista.has(chiaveData)) { 
+                        lista.set(chiaveData, { entrate: 0, uscite: 0 });
+                        labels.push(chiaveData);
+                    }
+                    let dataCorrente = lista.get(chiaveData)
+
+                    if (movimento == 1){
+                        dataCorrente.entrate += totale 
+                    } else if (movimento == 0){
+                        dataCorrente.uscite += totale 
+                    }  
+                } 
+
+                for(const [chiaveMese, datiMese] of lista){
+                    entrate.push(datiMese.entrate)
+                    uscite.push(datiMese.uscite)
+                }
+                results.push({entry: entrate, exit: uscite, etichette: labels})
+                 
+                res.status(200).json({ ok: 'true', dati: results })
+            }
+        })
+    } catch (errore) {
+        res.status(500).json({ ok: 'false', debug: errore })
+        console.log(query)
+    }
+}
+
+module.exports = { fetchSpese, fetchSpeseGroup, fetchSpeseChart, newSpesa, deleteSpesa }
