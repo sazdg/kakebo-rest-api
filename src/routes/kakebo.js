@@ -17,6 +17,7 @@ router.get('/log', logsController.fetchLogs)
 
 router.post('/regalo', regaliController.newRegalo)
 router.get('/regalo', regaliController.fetchRegali)
+router.get('/regalo-chart', regaliController.fetchRegaliChart)
 
 router.post('/spesa', speseController.newSpesa)
 router.get('/spesa', speseController.fetchSpese)

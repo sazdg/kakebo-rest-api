@@ -28,6 +28,35 @@ const fetchRegali = (req, res) => {
     }
 }
 
+const fetchRegaliChart = (req, res) => {
+    res.set('Access-Control-Allow-Origin', '*')
+    console.log('fetchRegaliChart')
+    
+    var query = `SELECT year(ks.data_ora) AS anno, round(sum(ks.spesa),2) AS totale, r.is_entry AS regali_ricevuti, count(*) AS quanti
+                FROM kakebo.regali r 
+                LEFT JOIN kakebo.kakebo_spese ks on ks.id_spese = r.id_spese 
+                GROUP BY year(ks.data_ora), r.is_entry`
+    try {
+
+        conn.query(query, (err, rows, fields) => {
+            if (rows == undefined) throw err
+
+            if (rows.length >=1){
+                var result = []
+                for(let i=0; i<rows.length; i++){
+                    let row = rows[i]
+                    result.push({anno: row.anno, spese: row.totale, ricevuti: row.regali_ricevuti, quanti: row.quanti})
+                }
+                res.status(200).json({ ok: 'true', dati: result })
+            } else {
+                res.status(200).json({ ok: 'true', dati: [] })
+            }
+        })
+    } catch(errore){
+        res.status(400).json({ ok: 'false', debug: errore })
+        console.log(query)
+    }
+}
 
 
 const newRegalo = (req, res) => {
@@ -92,4 +121,4 @@ const newRegalo = (req, res) => {
     
 }
 
-module.exports = {fetchRegali, newRegalo}
+module.exports = { fetchRegali, fetchRegaliChart, newRegalo}
