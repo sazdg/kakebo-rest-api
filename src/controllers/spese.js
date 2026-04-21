@@ -30,7 +30,7 @@ const composeQuery = (req, group) => {
         condition += condition !== "" ? " AND " : ""
         condition += `ks.tipo_movimento = "${tipoMovimento}"`
     }
-    if (descrizione !== undefined) {
+    if (descrizione !== undefined && descrizione !== "") {
         condition += condition !== "" ? " AND " : ""
         condition += `ks.descrizione LIKE "%${descrizione}%"`
     }
@@ -38,7 +38,7 @@ const composeQuery = (req, group) => {
         condition += condition !== "" ? " AND " : ""
         condition += `ks.id_tipo = "${idTipo}"`
     }
-    if (descrizioneTipo !== undefined) {
+    if (descrizioneTipo !== undefined && descrizioneTipo.trim() !== "") {
         condition += condition !== "" ? " AND " : ""
         condition += `kt.tipo LIKE  "%${descrizioneTipo}%"`
     }
@@ -102,6 +102,7 @@ const fetchSpese = (req, res) => {
                 var result = [];
                 for (let i = 0; i < rows.length; i++) {
                     result.push({ id_spesa: rows[i].id_spese, data_ora: moment(rows[i].data_ora).utcOffset(120), spesa: rows[i].spesa, descrizione_spesa: rows[i].descrizione, id_tipo: rows[i].id_tipo, descrizione_tipo: rows[i].descrizione_tipo, tipo_movimento: rows[i].tipo_movimento, is_regalo: rows[i].is_regalo, metodo: rows[i].metodo, prezzo_pieno: rows[i].prezzo_pieno, sconto: rows[i].sconto })
+            
                 }
                 res.status(200).json({ ok: 'true', dati: result })
             } else {
