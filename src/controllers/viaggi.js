@@ -89,4 +89,61 @@ const deleteViaggio = (req, res) => {
         console.log(query)
     }
 }
-module.exports = {fetchViaggi, newViaggio, deleteViaggio}
+
+const fetchSpeseViaggio = (req, res) => {
+    res.set('Access-Control-Allow-Origin', '*')
+    console.log('fetchSpeseViaggio')
+
+    var body = req.body
+    console.log(body)
+
+    if (body === undefined){
+        res.status(400).json({ ok: 'false', dati: [] })
+        return
+    }
+    
+ 
+    var query = `SELECT ks.*, kt.tipo AS descrizione_tipo 
+                FROM kakebo.kakebo_spese ks 
+                JOIN kakebo.viaggi v ON ( v.id_viaggio = ${body.id_viaggio} )
+                LEFT JOIN kakebo.kakebo_tipi kt ON ( kt.id_tipo = ks.id_tipo )
+                WHERE ks.data_ora >= v.da_quando AND ks.data_ora < v.a_quando
+
+                UNION 
+
+                SELECT ks.*, kt.tipo AS descrizione_tipo 
+                FROM kakebo.kakebo_spese ks 
+                LEFT JOIN kakebo.kakebo_tipi kt ON ( kt.id_tipo = ks.id_tipo )
+                WHERE ks.id_viaggio  = ${body.id_viaggio} 
+
+                ORDER BY data_ora ASC`
+
+    try {
+        conn.query(query, (err, rows, fields) => {
+
+            if (rows == undefined) throw err
+
+            if (rows.length >= 1){
+                var result = [];
+                for (let i = 0; i < rows.length; i++) {
+                     result.push({ id_spesa: rows[i].id_spese, data_ora: moment(rows[i].data_ora).utcOffset(120), spesa: rows[i].spesa, descrizione_spesa: rows[i].descrizione, id_tipo: rows[i].id_tipo, descrizione_tipo: rows[i].descrizione_tipo, tipo_movimento: rows[i].tipo_movimento, is_regalo: rows[i].is_regalo, metodo: rows[i].metodo, prezzo_pieno: rows[i].prezzo_pieno, sconto: rows[i].sconto, id_viaggio: rows[i].id_viaggio })   
+                    }
+
+                res.status(200).json({ ok: 'true', dati: result })
+            } else {
+                res.status(200).json({ ok: 'true', dati: [] })
+            }
+ 
+        })
+
+    } catch (errore) {
+        res.status(500).json({ok: 'false'})
+        console.log(query)
+    }
+
+
+}
+
+
+
+module.exports = { fetchViaggi, newViaggio, deleteViaggio, fetchSpeseViaggio }

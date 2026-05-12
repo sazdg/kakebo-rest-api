@@ -18,9 +18,13 @@ const composeQuery = (req, group) => {
     let dataA = req.query.data_a
     var query = ""
     if (group) {
-        query = "SELECT ks.id_tipo, SUM(ks.spesa) AS spesa, ks.tipo_movimento FROM kakebo_spese ks LEFT JOIN kakebo_tipi ON (kt.id_tipo=ks.id_tipo) "
+        query = `SELECT ks.id_tipo, SUM(ks.spesa) AS spesa, ks.tipo_movimento 
+        FROM kakebo_spese ks 
+        LEFT JOIN kakebo_tipi ON (kt.id_tipo=ks.id_tipo) `
     } else {
-        query = "SELECT ks.*, kt.tipo AS descrizione_tipo FROM kakebo_spese ks LEFT JOIN kakebo_tipi kt ON (kt.id_tipo=ks.id_tipo) "
+        query = `SELECT ks.*, kt.tipo AS descrizione_tipo 
+        FROM kakebo_spese ks 
+        LEFT JOIN kakebo_tipi kt ON(kt.id_tipo = ks.id_tipo) `
     }
     var condition = ""
     if (idSpese !== undefined) {
@@ -101,7 +105,7 @@ const fetchSpese = (req, res) => {
             if (rows.length >= 1) {
                 var result = [];
                 for (let i = 0; i < rows.length; i++) {
-                    result.push({ id_spesa: rows[i].id_spese, data_ora: moment(rows[i].data_ora).utcOffset(120), spesa: rows[i].spesa, descrizione_spesa: rows[i].descrizione, id_tipo: rows[i].id_tipo, descrizione_tipo: rows[i].descrizione_tipo, tipo_movimento: rows[i].tipo_movimento, is_regalo: rows[i].is_regalo, metodo: rows[i].metodo, prezzo_pieno: rows[i].prezzo_pieno, sconto: rows[i].sconto })
+                    result.push({ id_spesa: rows[i].id_spese, data_ora: moment(rows[i].data_ora).utcOffset(120), spesa: rows[i].spesa, descrizione_spesa: rows[i].descrizione, id_tipo: rows[i].id_tipo, descrizione_tipo: rows[i].descrizione_tipo, tipo_movimento: rows[i].tipo_movimento, is_regalo: rows[i].is_regalo, metodo: rows[i].metodo, prezzo_pieno: rows[i].prezzo_pieno, sconto: rows[i].sconto, id_viaggio: rows[i].id_viaggio })
             
                 }
                 res.status(200).json({ ok: 'true', dati: result })

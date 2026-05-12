@@ -31,6 +31,7 @@ router.get('/tipo', tipologieController.fetchTipi)
 router.post('/viaggio', viaggiController.newViaggio)
 router.get('/viaggio', viaggiController.fetchViaggi)
 router.delete('/viaggio', viaggiController.deleteViaggio)
+router.post('/viaggio-info', viaggiController.fetchSpeseViaggio)
 
 router.get('/notes', notesController.fetchNotes)
 router.post('/notes', notesController.newNote)
