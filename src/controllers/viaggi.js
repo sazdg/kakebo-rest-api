@@ -107,10 +107,8 @@ const fetchSpeseViaggio = (req, res) => {
                 FROM kakebo.kakebo_spese ks 
                 JOIN kakebo.viaggi v ON ( v.id_viaggio = ${body.id_viaggio} )
                 LEFT JOIN kakebo.kakebo_tipi kt ON ( kt.id_tipo = ks.id_tipo )
-                WHERE ks.data_ora >= v.da_quando AND ks.data_ora < v.a_quando
-
+                WHERE ks.data_ora >= v.da_quando AND ks.data_ora <= DATE_ADD(v.a_quando, INTERVAL 1 DAY)
                 UNION 
-
                 SELECT ks.*, kt.tipo AS descrizione_tipo 
                 FROM kakebo.kakebo_spese ks 
                 LEFT JOIN kakebo.kakebo_tipi kt ON ( kt.id_tipo = ks.id_tipo )
