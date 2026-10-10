@@ -1,13 +1,14 @@
-const express = require('express')
-const router = express.Router()
+import express, { Router } from 'express'
 
-const testController = require('../controllers/test')
-const logsController = require('../controllers/logs')
-const regaliController = require('../controllers/regali')
-const speseController = require('../controllers/spese')
-const tipologieController = require('../controllers/tipologie')
-const viaggiController = require('../controllers/viaggi')
-const notesController = require('../controllers/notes')
+import * as testController from '../controllers/test'
+import * as logsController from '../controllers/logs'
+import * as regaliController from '../controllers/regali'
+import * as speseController from '../controllers/spese'
+import * as tipologieController from '../controllers/tipologie'
+import * as viaggiController from '../controllers/viaggi'
+import * as notesController from '../controllers/notes'
+
+const router: Router = express.Router()
 
 router.get('/', testController.showFeedback)
 router.get('/ping', testController.pong)
@@ -37,4 +38,4 @@ router.get('/notes', notesController.fetchNotes)
 router.post('/notes', notesController.newNote)
 router.delete('/notes', notesController.deleteNote)
 
-module.exports = router
+export default router 
